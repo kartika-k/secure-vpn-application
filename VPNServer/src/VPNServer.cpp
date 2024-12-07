@@ -1,22 +1,23 @@
-#include <Poco/Net/SecureServerSocket.h>
-#include <Poco/Net/SecureStreamSocket.h>
-#include <Poco/Net/Context.h>
-#include <Poco/Net/SSLManager.h>
-#include <Poco/Thread.h>
+#include <Poco/Net/SecureServerSocket.h>    //Provides a server socket class for secure SSL/TLS connections.
+#include <Poco/Net/SecureStreamSocket.h>    //Provides a stream socket class for secure SSL/TLS connections.
+#include <Poco/Net/Context.h>               //Represents the SSL context, managing certificates, keys.
+#include <Poco/Net/SSLManager.h>            //Handles the initialization and cleanup of the SSL/TLS subsystem.
+#include <Poco/Thread.h>                    //Provide thread management classes.
 #include <Poco/ThreadPool.h>
 #include <Poco/Logger.h>
-#include <Poco/FileChannel.h>
+#include <Poco/FileChannel.h>                //Provide logging utilities for file-based logging with formatted log messages.(Logger.h,PatternFormatter.h,FormattingChannel.h)
 #include <Poco/PatternFormatter.h>
 #include <Poco/FormattingChannel.h>
-#include <Poco/AutoPtr.h>
+#include <Poco/AutoPtr.h>                    //Provides smart pointer functionality for automatic memory management.
 #include <iostream>
 #include <vector>
-#include <map>
-#include <mutex>
-#include <memory>
-#include <functional>
+#include <map>                               //Key-value pair container for managing client connections.
+#include <mutex>                             // Provides thread-safety for shared resources.
+#include <memory>                            //Provides smart pointers like std::shared_ptr.
+#include <functional>                        //For using std::function and lambda expressions.
 
 // Helper class to wrap lambdas for Poco::Runnable
+// This allows using lambda functions as tasks in Poco thread pools.
 class RunnableWrapper : public Poco::Runnable {
 private:
     std::function<void()> task;
@@ -31,39 +32,40 @@ public:
 
 class VPNServer {
 private:
+    //Secure server socket for handling incoming SSL/TLS connections.
     Poco::Net::SecureServerSocket serverSocket;
-    Poco::ThreadPool threadPool;
-    bool isRunning;
+    Poco::ThreadPool threadPool;    // Thread pool for managing client handling threads.
+    bool isRunning;                //Flag to indicate if the server is running.
     mutable std::mutex clientsMutex; // Use mutable to allow modification in const methods
-    std::map<std::string, Poco::Net::SecureStreamSocket> clients;
-    Poco::Logger& logger;
-    static const size_t BUFFER_SIZE = 4096;
+    std::map<std::string, Poco::Net::SecureStreamSocket> clients; // Active client connections.
+    Poco::Logger& logger;    //// Logger for logging server events.
+    static const size_t BUFFER_SIZE = 4096;    // Buffer size for receiving data.
 
-    // SSL Context initialization
+    // Initializes the SSL context for secure connections.
     Poco::Net::Context::Ptr getSSLContext() {
         return new Poco::Net::Context(
-            Poco::Net::Context::SERVER_USE,
+            Poco::Net::Context::SERVER_USE,    // Context for server-side SSL.
             "server.crt",     // Certificate path
             "server.key",     // Private key path
             "cafile.pem",     // CA certificates file
             Poco::Net::Context::VERIFY_RELAXED,
-            9,                // Verification depth
+            9,                // Verification mode
             true,             // Load default CA certificates
             "ALL:!ADH:!LOW:!EXP:!MD5:@STRENGTH" // Cipher list
         );
     }
 
-    // Initialize logger
+    // Initializes the logger with a file output channel and formatted messages.
     static Poco::Logger& initLogger() {
         Poco::AutoPtr<Poco::FileChannel> fileChannel(new Poco::FileChannel("vpn_server.log"));
         Poco::AutoPtr<Poco::PatternFormatter> formatter(new Poco::PatternFormatter);
-        formatter->setProperty("pattern", "%Y-%m-%d %H:%M:%S.%i [%p] %s: %t");
+        formatter->setProperty("pattern", "%Y-%m-%d %H:%M:%S.%i [%p] %s: %t");    // Log message format.
         Poco::AutoPtr<Poco::FormattingChannel> formattingChannel(
             new Poco::FormattingChannel(formatter, fileChannel));
         Poco::Logger::root().setChannel(formattingChannel);
         return Poco::Logger::get("VPNServer");
     }
-
+    // Handles communication with a connected client.
     void handleClient(Poco::Net::SecureStreamSocket& clientSocket) {
         std::string clientId = clientSocket.peerAddress().toString();
         logger.information("New client connected: " + clientId);
@@ -87,11 +89,11 @@ private:
                         break;
                     }
 
-                    // Handle received data
+                    // Process received data
                     handleReceivedData(clientId, buffer, received);
                 }
                 catch (Poco::TimeoutException&) {
-                    // Timeout is normal, continue listening
+                    // Timeout is normal, continue listening for data
                     continue;
                 }
                 catch (Poco::Exception& e) {
@@ -120,7 +122,7 @@ private:
 
         logger.information("Client disconnected and cleaned up: " + clientId);
     }
-
+    // Processes received data from a client.
     void handleReceivedData(const std::string& clientId, 
                            const std::vector<uint8_t>& buffer, 
                            int received) {
@@ -147,31 +149,32 @@ private:
     }
 
 public:
+    // Constructor to initialize the server.
     VPNServer(uint16_t port)
-        : threadPool(4, 32)  // min 4, max 32 threads
+        : threadPool(4, 32)   // Thread pool with a minimum of 4 and a maximum of 32 threads.
         , isRunning(false)
         , logger(initLogger()) {
         
         // Initialize SSL
-        Poco::Net::initializeSSL();
+        Poco::Net::initializeSSL();    // Initialize the SSL subsystem.
         
         // Create SSL context and server socket
-        Poco::Net::Context::Ptr context = getSSLContext();
+        Poco::Net::Context::Ptr context = getSSLContext();     // Create SSL context.
         serverSocket = Poco::Net::SecureServerSocket(
-            Poco::Net::SocketAddress("0.0.0.0", port), 
-            64,     // Backlog
-            context
+            Poco::Net::SocketAddress("0.0.0.0", port),  // Bind to all network interfaces on the specified port.
+            64,     // Connection backlog.
+            context    // SSL context for secure connections.
         );
 
-        serverSocket.setReceiveTimeout(Poco::Timespan(5, 0)); // 5 seconds timeout
+        serverSocket.setReceiveTimeout(Poco::Timespan(5, 0)); // Set a 5-second timeout for receiving data.
         logger.information("VPN Server initialized on port " + std::to_string(port));
     }
 
     ~VPNServer() {
-        stop();
-        Poco::Net::uninitializeSSL();
+        stop();    // Stop the server and clean up resources.
+        Poco::Net::uninitializeSSL();    // Uninitialize the SSL subsystem.
     }
-
+    // Starts the server to accept client connections.
     void start() {
         if (isRunning) return;
 
@@ -197,7 +200,7 @@ public:
             }
         }
     }
-
+// Stops the server and cleans up resources.
     void stop() {
         if (!isRunning) return;
 

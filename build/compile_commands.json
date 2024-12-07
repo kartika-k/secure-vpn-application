@@ -1,0 +1,8 @@
+[
+{
+  "directory": "C:/Users/karti/OneDrive/Desktop/VPN_Application/build",
+  "command": "C:\\MinGW\\bin\\gcc.exe   -g -o CMakeFiles\\ExamplePoco.dir\\main.c.obj -c C:\\Users\\karti\\OneDrive\\Desktop\\VPN_Application\\main.c",
+  "file": "C:/Users/karti/OneDrive/Desktop/VPN_Application/main.c",
+  "output": "CMakeFiles/ExamplePoco.dir/main.c.obj"
+}
+]

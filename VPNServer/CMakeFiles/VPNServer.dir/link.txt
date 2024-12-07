@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/VPNServer.dir/src/Encryption.cpp.o CMakeFiles/VPNServer.dir/src/main_server.cpp.o CMakeFiles/VPNServer.dir/src/Tunnel.cpp.o CMakeFiles/VPNServer.dir/src/VPNServer.cpp.o -o VPNServer  -lPoco::Net 

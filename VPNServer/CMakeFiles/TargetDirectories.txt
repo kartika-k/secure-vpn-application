@@ -1,0 +1,3 @@
+/mnt/c/Users/karti/OneDrive/Desktop/VPN_Application/secure-vpn-application/VPNServer/CMakeFiles/VPNServer.dir
+/mnt/c/Users/karti/OneDrive/Desktop/VPN_Application/secure-vpn-application/VPNServer/CMakeFiles/edit_cache.dir
+/mnt/c/Users/karti/OneDrive/Desktop/VPN_Application/secure-vpn-application/VPNServer/CMakeFiles/rebuild_cache.dir

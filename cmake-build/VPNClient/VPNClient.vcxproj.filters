@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\karti\OneDrive\Desktop\VPN_Application\secure-vpn-application\VPNClient\src\Encryption.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\karti\OneDrive\Desktop\VPN_Application\secure-vpn-application\VPNClient\src\main_client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\karti\OneDrive\Desktop\VPN_Application\secure-vpn-application\VPNClient\src\Tunnel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\karti\OneDrive\Desktop\VPN_Application\secure-vpn-application\VPNClient\src\VPNClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\karti\OneDrive\Desktop\VPN_Application\secure-vpn-application\VPNClient\include\Encryption.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\karti\OneDrive\Desktop\VPN_Application\secure-vpn-application\VPNClient\include\Tunnel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\karti\OneDrive\Desktop\VPN_Application\secure-vpn-application\VPNClient\include\VPNClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\karti\OneDrive\Desktop\VPN_Application\secure-vpn-application\VPNClient\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{081469BF-FBC1-3B18-AAEA-6C795697158C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{084A80BE-D718-3F87-84B1-FC3D48B2C4AE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

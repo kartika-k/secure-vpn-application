@@ -1,0 +1,4 @@
+C:/Users/karti/OneDrive/Desktop/VPN_Application/secure-vpn-application/cmake-build/CMakeFiles/ALL_BUILD.dir
+C:/Users/karti/OneDrive/Desktop/VPN_Application/secure-vpn-application/cmake-build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/karti/OneDrive/Desktop/VPN_Application/secure-vpn-application/cmake-build/VPNClient/CMakeFiles/VPNClient.dir
+C:/Users/karti/OneDrive/Desktop/VPN_Application/secure-vpn-application/cmake-build/VPNServer/CMakeFiles/VPNServer.dir

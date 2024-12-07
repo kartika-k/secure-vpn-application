@@ -1,26 +1,26 @@
-#include <Poco/Net/SecureStreamSocket.h>
-#include <Poco/Net/SSLManager.h>
-#include <Poco/Net/Context.h>
-#include <Poco/Net/NetException.h>
-#include <Poco/Util/Application.h>
+#include <Poco/Net/SecureStreamSocket.h> //Handles encrypted communication.
+#include <Poco/Net/SSLManager.h> // Initializes and manages SSL/TLS
+#include <Poco/Net/Context.h>    //Congures SSL context for secure connections.
+#include <Poco/Net/NetException.h>    //Manages exceptions for network errors
+#include <Poco/Util/Application.h> //implements the main subsystem in a process. The application class is responsible for initializing all its subsystems.
 #include <Poco/Thread.h>
 #include <iostream>
 #include <vector>
 #include <string>
 
-class VPNClient {
+class VPNClient {     //`VPNClient` class manages a secure VPN connection using SSL/TLS
 private:
-    Poco::Net::SecureStreamSocket socket;
-    std::string serverAddress;
-    uint16_t serverPort;
-    bool isConnected;
-    std::vector<uint8_t> buffer;
-    static const size_t BUFFER_SIZE = 4096;
+    Poco::Net::SecureStreamSocket socket; // The secure socket for communication.
+    std::string serverAddress;    // Server's IP or hostname.
+    uint16_t serverPort;          // Server's port number.
+    bool isConnected;             // Connection status.
+    std::vector<uint8_t> buffer;  // Buffer for receiving data.
+    static const size_t BUFFER_SIZE = 4096; // Default buffer size for data transmission.
 
     // SSL Context
     Poco::Net::Context::Ptr getSSLContext() {
         return new Poco::Net::Context(
-            Poco::Net::Context::CLIENT_USE,
+            Poco::Net::Context::CLIENT_USE,    // SSL client mode.
             "",  // certificatePath
             "",  // privateKeyPath
             "",  // caLocation
@@ -31,21 +31,21 @@ private:
     }
 
 public:
-    VPNClient(const std::string& address, uint16_t port) 
+    VPNClient(const std::string& address, uint16_t port) //Takes server address and port as input.
         : serverAddress(address)
         , serverPort(port)
         , isConnected(false)
         , buffer(BUFFER_SIZE) {
         
         // Initialize SSL
-        Poco::Net::initializeSSL();
+        Poco::Net::initializeSSL(); //Initializes SSL  using `initializeSSL`.
     }
 
     ~VPNClient() {
-        disconnect();
-        Poco::Net::uninitializeSSL();
+        disconnect();    // Ensure the connection is closed.
+        Poco::Net::uninitializeSSL(); // Clean up SSL resources.
     }
-
+    //Establishes a secure connection with the server , Completes the SSL handshake for authentication
     bool connect() {
         try {
             // Create SSL context and socket
@@ -59,7 +59,7 @@ public:
             // Perform SSL handshake
             socket.completeHandshake();
             
-            isConnected = true;
+            isConnected = true; // Mark as connected.
             std::cout << "Successfully connected to VPN server" << std::endl;
             return true;
         }
@@ -69,12 +69,12 @@ public:
             return false;
         }
     }
-
+    // Safely terminates the connection and cleans up resources.
     void disconnect() {
         if (isConnected) {
             try {
-                socket.shutdown();
-                socket.close();
+                socket.shutdown();    // shut down the connection.
+                socket.close();    // Close the socket.
                 isConnected = false;
                 std::cout << "Disconnected from VPN server" << std::endl;
             }
@@ -89,9 +89,8 @@ public:
             std::cerr << "Not connected to server" << std::endl;
             return false;
         }
-
         try {
-            socket.sendBytes(data.data(), data.size());
+            socket.sendBytes(data.data(), data.size());     // Send data over the secure socket.
             return true;
         }
         catch (Poco::Exception& e) {
@@ -99,7 +98,7 @@ public:
             return false;
         }
     }
-
+    // Reads data securely from the server into a buer.
     std::vector<uint8_t> receiveData() {
         if (!isConnected) {
             std::cerr << "Not connected to server" << std::endl;
@@ -116,7 +115,7 @@ public:
             std::cerr << "Error receiving data: " << e.what() << std::endl;
         }
 
-        return std::vector<uint8_t>();
+        return std::vector<uint8_t>();    // Return empty vector on failure.
     }
 
     bool isActive() const {
@@ -128,7 +127,7 @@ public:
         while (isConnected) {
             try {
                 std::vector<uint8_t> pingData = {0x01}; // Simple ping packet
-                sendData(pingData);
+                sendData(pingData);    // Send a ping packet.
                 Poco::Thread::sleep(30000); // Sleep for 30 seconds
             }
             catch (Poco::Exception& e) {

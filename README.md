@@ -115,7 +115,7 @@ The server can handle multiple concurrent client connections using multi-threadi
 
 ### Contact
 **Project Maintainer**: Kartika Kannojiya  
-**Project Link**: [GitHub Link](https://github.com/your-username/secure-vpn-application)
+**Project Link**: [GitHub Link](https://github.com/kartika-k/secure-vpn-application.git)
 
 ---
 
